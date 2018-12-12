@@ -17,7 +17,7 @@ namespace NRatel.TextureUnpacker
             Plist plist = loader.LoadPlist(plistFilePath);
             Texture2D texture2D = loader.LoadTexture(pngFilePath, plist.metadata);
 
-            new ImageSpliter().Split(texture2D, plist.frames);
+            new ImageSpliter().Split(texture2D, plist.frames, true);
         }
     }
 
