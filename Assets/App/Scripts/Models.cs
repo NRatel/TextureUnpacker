@@ -18,21 +18,13 @@ namespace NRatel.TextureUnpacker
     public class Metadata
     {
         public int format;
-        public string pixelFormat;
-        public bool premultiplyAlpha;
-        public string realTextureFileName;
         public SizeInt size;
-        public string smartupdate;
         public string textureFileName;
 
-        public Metadata(int format, string pixelFormat, bool premultiplyAlpha, string realTextureFileName, SizeInt size, string smartupdate, string textureFileName)
+        public Metadata(int format, SizeInt size, string textureFileName)
         {
             this.format = format;
-            this.pixelFormat = pixelFormat;
-            this.premultiplyAlpha = premultiplyAlpha;
-            this.realTextureFileName = realTextureFileName;
             this.size = size;
-            this.smartupdate = smartupdate;
             this.textureFileName = textureFileName;
         }
     }
@@ -40,22 +32,20 @@ namespace NRatel.TextureUnpacker
     public class Frame
     {
         public string textureName;
-        public List<string> aliases;
-        public Vector2Int spriteOffset;
-        public SizeInt spriteSize;
-        public SizeInt spriteSourceSize;
-        public RectInt textureRect;
-        public bool textureRotated;
+        public Vector2Int startPos;
+        public SizeInt size;
+        public SizeInt sourceSize;
+        public bool isRotated;
+        public Vector2Int offset;
 
-        public Frame(string textureName, List<string> aliases, Vector2Int spriteOffset, SizeInt spriteSize, SizeInt spriteSourceSize, RectInt textureRect, bool textureRotated)
+        public Frame(string textureName, Vector2Int startPos, SizeInt size, SizeInt sourceSize, bool isRotated, Vector2Int offset)
         {
             this.textureName = textureName;
-            this.aliases = aliases;
-            this.spriteOffset = spriteOffset;
-            this.spriteSize = spriteSize;
-            this.spriteSourceSize = spriteSourceSize;
-            this.textureRect = textureRect;
-            this.textureRotated = textureRotated;
+            this.startPos = startPos;
+            this.size = size;
+            this.sourceSize = sourceSize;
+            this.isRotated = isRotated;
+            this.offset = offset;
         }
     }
 

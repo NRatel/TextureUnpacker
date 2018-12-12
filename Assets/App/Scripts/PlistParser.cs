@@ -12,7 +12,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
 
-namespace NRatel.PlistParser
+namespace NRatel.TextureUnpacker.PlistParser
 {
     public class PlistElement
     {
