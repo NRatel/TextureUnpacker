@@ -8,32 +8,18 @@ namespace NRatel.TextureUnpacker
 {
     public class ImageSpliter
     {
-        public IEnumerator Split(Texture2D bigTexture, List<Frame> frames, bool isUseOffset)
+        Main main;
+        public ImageSpliter(Main main)
         {
-            int total = frames.Count;
-            int index = 0;
-            foreach (var frame in frames)
-            {
-                if (isUseOffset)
-                {
-                    SplitWithOffset(bigTexture, frame);
-                }
-                else
-                {
-                    SplitWithoutOffset(bigTexture, frame);
-                }
-                index += 1;
-                Main.SetTip("进度：" + index + "/" + total, false);
-                yield return null;
-            }
+            this.main = main;
         }
 
-        private void SplitWithOffset(Texture2D bigTexture, Frame frame)
+        public void SplitWithOffset(Texture2D bigTexture, Frame frame)
         {
             //TODO
         }
 
-        private void SplitWithoutOffset(Texture2D bigTexture, Frame frame)
+        public void SplitWithoutOffset(Texture2D bigTexture, Frame frame)
         {
             //小图宽高。也是忽略offset时要被还原的目标宽高。
             int destWidth = frame.size.width;
@@ -87,7 +73,7 @@ namespace NRatel.TextureUnpacker
 
         private void Save(string textureName, byte[] bytes)
         {
-            string dir = Path.GetDirectoryName(Main.main.plistFilePath) + @"\NRatel_" + Path.GetFileNameWithoutExtension(Main.main.plistFilePath);
+            string dir = this.main.GetSaveDir();
             if (!Directory.Exists(dir))
             {
                 Directory.CreateDirectory(dir);

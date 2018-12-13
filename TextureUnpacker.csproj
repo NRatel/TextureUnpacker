@@ -303,6 +303,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\App\Scripts\AppUI.cs" />
     <Compile Include="Assets\App\Scripts\FilesOrFolderDragInto.cs" />
     <Compile Include="Assets\App\Scripts\ImageSpliter.cs" />
     <Compile Include="Assets\App\Scripts\Loaders\Loader.cs" />

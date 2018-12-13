@@ -10,27 +10,30 @@ namespace NRatel.TextureUnpacker
     public class Main : MonoBehaviour
     {
         static public Main main;
-        public Image m_Image_BigImage;
-        public Text m_Text_Tip;
-        public Button m_Btn_Excute;
+        private string plistFilePath = "";
+        private string pngFilePath = "";
 
-        public string plistFilePath = "";
-        public string pngFilePath = "";
+        private bool isExecuting = false;
+
+        private AppUI appUI;
 
         private Loader loader;
         private Plist plist;
         private Texture2D bigTexture;
 
-        void Start()
+        private ImageSpliter imageSpliter;
+
+        private void Start()
         {
             main = this;
+            appUI = GetComponent<AppUI>();
             Screen.SetResolution(800, 600, false);
 
 #if UNITY_EDITOR
             //测试用
             plistFilePath = @"C:\Users\Administrator\Desktop\p\s.plist";
             pngFilePath = @"C:\Users\Administrator\Desktop\p\s.png";
-            LoadInputFiles();
+            StartCoroutine(LoadFiles());
 #endif
 
             RegisterEvents();
@@ -38,11 +41,17 @@ namespace NRatel.TextureUnpacker
 
         private void RegisterEvents()
         {
-            this.GetComponent<FilesOrFolderDragInto>().AddEventListener((List<string> aPathNames) =>
+            GetComponent<FilesOrFolderDragInto>().AddEventListener((List<string> aPathNames) =>
             {
+                if (isExecuting)
+                {
+                    appUI.SetTip("正在执行，请等待结束");
+                    return;
+                }
+
                 if (aPathNames.Count > 1)
                 {
-                    Main.SetTip("只可拖入一个文件");
+                    appUI.SetTip("只可拖入一个文件");
                     return;
                 }
                 else
@@ -54,7 +63,7 @@ namespace NRatel.TextureUnpacker
                         pngFilePath = Path.GetDirectoryName(path) + @"\" + Path.GetFileNameWithoutExtension(path) + ".png";
                         if (!File.Exists(pngFilePath))
                         {
-                            Main.SetTip("不存在与当前plist文件同名的png文件");
+                            appUI.SetTip("不存在与当前plist文件同名的png文件");
                             return;
                         }
                     }
@@ -64,85 +73,82 @@ namespace NRatel.TextureUnpacker
                         plistFilePath = Path.GetDirectoryName(path) + @"\" + Path.GetFileNameWithoutExtension(path) + ".plist";
                         if (!File.Exists(plistFilePath))
                         {
-                            Main.SetTip("不存在与当前png文件同名的plist文件");
+                            appUI.SetTip("不存在与当前png文件同名的plist文件");
                             return;
                         }
                     }
                     else
                     {
-                        Main.SetTip("请放入plist 或 png 文件");
+                        appUI.SetTip("请放入plist 或 png 文件");
                         return;
                     }
-                    LoadInputFiles();
+                    StartCoroutine(LoadFiles());
                 }
             });
 
-            this.m_Btn_Excute.onClick.AddListener(() =>
+            appUI.m_Btn_Excute.onClick.AddListener(() =>
             {
-                if (loader == null || plist == null)
+                if (isExecuting)
                 {
-                    Main.SetTip("没有指定可执行的plist&png");
+                    appUI.SetTip("正在执行，请等待结束");
                     return;
                 }
-                StartCoroutine(new ImageSpliter().Split(bigTexture, plist.frames, false));
+
+                if (loader == null || plist == null)
+                {
+                    appUI.SetTip("没有指定可执行的plist&png");
+                    return;
+                }
+
+                isExecuting = true;
+                imageSpliter = new ImageSpliter(this);
+                StartCoroutine(Split(false));
             });
         }
-
-        private void LoadInputFiles()
+        
+        private IEnumerator LoadFiles()
         {
-            this.loader = Loader.LookingForLoader(plistFilePath);
-            this.plist = loader.LoadPlist(plistFilePath);
-            this.bigTexture = loader.LoadTexture(pngFilePath, plist.metadata);
-        }
-
-        static public void SetTip(string str, bool isError = true)
-        {
-            string prefix = "<color=red>";
-            string postfix = "</color>";
-            if (isError == false)
+            loader = Loader.LookingForLoader(plistFilePath);
+            if (loader != null)
             {
-                prefix = "<color=green>";
-            }
-            main.m_Text_Tip.text = prefix + str + postfix;
-        }
-
-        static public void SetImage(Texture2D texture)
-        {
-            //放到协程里，避免图大时卡顿
-            main.StartCoroutine(main.LoadImage(texture));
-        }
-
-        public IEnumerator LoadImage(Texture2D texture)
-        {
-            Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
-            this.m_Image_BigImage.sprite = sprite;
-
-            float width, height;
-            float aspectRatio = 1.0f * texture.width / texture.height;
-
-            int max = Mathf.Max(texture.width, texture.height);
-            max = max < 600 ? max : 600;
-
-            if (aspectRatio == 1)
-            {
-                width = max;
-                height = max;
-            }
-            else if (aspectRatio > 1)
-            {
-                width = max;
-                height = width / aspectRatio;
+                appUI.SetTip("可处理! \n【" + loader.GetType().Name.ToString().Replace("Loader_", "") + "】", false);
+                plist = loader.LoadPlist(plistFilePath);
+                bigTexture = loader.LoadTexture(pngFilePath, plist.metadata);
+                appUI.SetImage(bigTexture);
             }
             else
             {
-                height = max;
-                width = height * aspectRatio;
+                appUI.SetTip("无法识别的plist类型，请联系作者");
             }
-
-            this.m_Image_BigImage.GetComponent<RectTransform>().sizeDelta = new Vector2(width, height);
-
             yield return null;
         }
+
+        private IEnumerator Split(bool isUseOffset)
+        {
+            int total = plist.frames.Count;
+            int count = 0;
+            foreach (var frame in plist.frames)
+            {
+                if (isUseOffset)
+                {
+                    imageSpliter.SplitWithOffset(bigTexture, frame);
+                }
+                else
+                {
+                    imageSpliter.SplitWithoutOffset(bigTexture, frame);
+                }
+                count += 1;
+                appUI.SetTip("进度：" + count + "/" + total, false);
+                yield return null;
+            }
+            isExecuting = false;
+        }
+
+        public string GetSaveDir()
+        {
+            return Path.GetDirectoryName(Main.main.plistFilePath) + @"\NRatel_" + Path.GetFileNameWithoutExtension(Main.main.plistFilePath);
+        }
+
     }
 }
 

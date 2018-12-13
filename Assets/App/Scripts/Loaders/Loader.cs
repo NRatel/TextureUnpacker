@@ -19,22 +19,20 @@ namespace NRatel.TextureUnpacker
                 int format = pd.root["metadata"].AsDict()["format"].AsInteger();
                 if (format == 2)
                 {
-                    Main.SetTip("将使用 Loader_Format2 加载解析 Plist", false);
                     loader = new Loader_Format2();
                 }
                 else if (format == 3)
                 {
-                    Main.SetTip("将使用 Loader_Format3 加载解析 Plist", false);
                     loader = new Loader_Format3();
                 }
                 else
                 {
-                    Main.SetTip("待处理的plist类型");
+                    Debug.LogWarning("找到format,但是尚未处理");
                 }
             }
             catch
             {
-                Main.SetTip("未知的plist类型");
+                Debug.LogWarning("找不到format");
             }
 
             return loader;
@@ -71,8 +69,6 @@ namespace NRatel.TextureUnpacker
 
             Texture2D texture = new Texture2D(metadata.size.width, metadata.size.height);
             texture.LoadImage(bytes);
-
-            Main.SetImage(texture);
             return texture;
         }
     }
