@@ -2,8 +2,7 @@
 
 基于 Unity 2018.2.11f1  
 
-**todolist:**  
-
+**TODO List:**  
 --图片还原功能（offset+rotate的正确处理）。  
 --更多版本plist的支持。  
 --mac平台的支持。  
