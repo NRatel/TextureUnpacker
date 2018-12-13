@@ -102,7 +102,8 @@ namespace NRatel.TextureUnpacker
 
                 isExecuting = true;
                 imageSpliter = new ImageSpliter(this);
-                StartCoroutine(Split(false));
+                StartCoroutine(Split(true));
+                //StartCoroutine(Split(false));
             });
         }
         
@@ -148,7 +149,6 @@ namespace NRatel.TextureUnpacker
         {
             return Path.GetDirectoryName(Main.main.plistFilePath) + @"\NRatel_" + Path.GetFileNameWithoutExtension(Main.main.plistFilePath);
         }
-
     }
 }
 
