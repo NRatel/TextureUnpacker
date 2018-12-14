@@ -28,7 +28,7 @@ namespace NRatel.TextureUnpacker
         private Plist plist;
         private Texture2D bigTexture;
 
-        private ImageSpliter imageSpliter;
+        private TextureUnpacker textureUnpacker;
 
         private void Start()
         {
@@ -109,7 +109,7 @@ namespace NRatel.TextureUnpacker
                 }
 
                 isExecuting = true;
-                imageSpliter = new ImageSpliter(this);
+                textureUnpacker = new TextureUnpacker(this);
                 StartCoroutine(Unpack());
             });
 
@@ -144,11 +144,11 @@ namespace NRatel.TextureUnpacker
             {
                 if (currentUnpackMode == UnpackMode.JustSplit)
                 {
-                    imageSpliter.JustSplit(bigTexture, frame);
+                    textureUnpacker.JustSplit(bigTexture, frame);
                 }
                 else if (currentUnpackMode == UnpackMode.Restore)
                 {
-                    imageSpliter.Restore(bigTexture, frame);
+                    textureUnpacker.Restore(bigTexture, frame);
                 }
                 count += 1;
                 appUI.SetTip("进度：" + count + "/" + total, false);

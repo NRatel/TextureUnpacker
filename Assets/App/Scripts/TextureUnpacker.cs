@@ -6,10 +6,10 @@ using System.IO;
 
 namespace NRatel.TextureUnpacker
 {
-    public class ImageSpliter
+    public class TextureUnpacker
     {
         Main main;
-        public ImageSpliter(Main main)
+        public TextureUnpacker(Main main)
         {
             this.main = main;
         }
@@ -35,7 +35,7 @@ namespace NRatel.TextureUnpacker
                 sampleHeight = frame.size.width;
             }
 
-            //换算起始位置。注意，plist中坐标的Y轴方向和GetPixels()的Y轴方向相反、起点相反（左上和左下），需要转换。
+            //起始位置（Y轴需变换，且受旋转影响）。
             int startPosX = frame.startPos.x;
             int startPosY = bigTexture.height - (frame.startPos.y + sampleHeight);
 
@@ -65,8 +65,8 @@ namespace NRatel.TextureUnpacker
 
             //保存打扫
             byte[] bytes = destTexture.EncodeToPNG();
-            Save("JustSplit", frame.textureName, bytes);
-            Texture2D.DestroyImmediate(destTexture);
+            Save("SplitedResult", frame.textureName, bytes);
+            Texture2D.Destroy(destTexture);
             destTexture = null;
         }
 
@@ -102,9 +102,6 @@ namespace NRatel.TextureUnpacker
             //采集像素（受旋转影响）
             Color[] colors = bigTexture.GetPixels(startPosX, startPosY, sampleWidth, sampleHeight);
 
-            //Debug.Log("offsetLX: " + offsetLX);
-            //Debug.Log("offsetTY: " + offsetTY);
-
             //设置像素（将采样像素放到目标图中去）
             for (int w = 0; w < destWidth; w++)
             {
@@ -139,7 +136,7 @@ namespace NRatel.TextureUnpacker
             //保存打扫
             byte[] bytes = destTexture.EncodeToPNG();
             Save("Restore", frame.textureName, bytes);
-            Texture2D.DestroyImmediate(destTexture);
+            Texture2D.Destroy(destTexture);
             destTexture = null;
         }
 
