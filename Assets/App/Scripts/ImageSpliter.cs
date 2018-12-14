@@ -82,8 +82,8 @@ namespace NRatel.TextureUnpacker
             int destHeight = frame.sourceSize.height;
 
             //换算偏移值（不受旋转影响）
-            int offsetLX = frame.sourceSize.width / 2 - frame.size.width / 2 - frame.offset.x;
-            int offsetTY = frame.sourceSize.height / 2 - frame.size.height / 2 - frame.offset.y;
+            int offsetLX = frame.offset.x + frame.sourceSize.width / 2 - frame.size.width / 2;
+            int offsetBY = -(-frame.offset.y + frame.size.height / 2 - frame.sourceSize.height / 2);
 
             //按目标宽高创建一张目标底图
             Texture2D destTexture = new Texture2D(destWidth, destHeight);
@@ -110,19 +110,19 @@ namespace NRatel.TextureUnpacker
             {
                 for (int h = 0; h < destHeight; h++)
                 {
-                    if (w >= offsetLX && w < frame.size.width + offsetLX && h >= offsetTY && h < frame.size.height + offsetTY)
+                    if (w >= offsetLX && w < frame.size.width + offsetLX && h >= offsetBY && h < frame.size.height + offsetBY)
                     {
                         //找到目标区域坐标( w，h)对应的采样区域坐标
                         if (frame.isRotated)
                         {
                             //旋转时，目标图中的坐标(w, h),对应的采样区坐标为(h-offsetTY, sampleHeight-(w-offsetLX)-1)
-                            int index = (sampleHeight - (w - offsetLX) - 1) * sampleWidth + (h - offsetTY);
+                            int index = (sampleHeight - (w - offsetLX) - 1) * sampleWidth + (h - offsetBY);
                             destTexture.SetPixel(w, h, colors[index]);
                         }
                         else
                         {
                             //没有旋转时，目标图中的坐标(w, h),对应的采样区坐标为（w-offsetLX, h-offsetTY）
-                            int index = (h - offsetTY) * sampleWidth + (w - offsetLX);
+                            int index = (h - offsetBY) * sampleWidth + (w - offsetLX);
                             destTexture.SetPixel(w, h, colors[index]);
                         }
                     }

@@ -9,6 +9,13 @@ namespace NRatel.TextureUnpacker
 {
     public class Main : MonoBehaviour
     {
+        public enum UnpackMode
+        {
+            JustSplit = 0,
+            Restore = 1,
+        }
+        private UnpackMode currentUnpackMode;
+
         static public Main main;
         private string plistFilePath = "";
         private string pngFilePath = "";
@@ -25,14 +32,15 @@ namespace NRatel.TextureUnpacker
 
         private void Start()
         {
+            Screen.SetResolution(800, 600, false);
             main = this;
             appUI = GetComponent<AppUI>();
-            Screen.SetResolution(800, 600, false);
+            currentUnpackMode = (UnpackMode)appUI.m_Dropdown_SelectMode.value;
 
 #if UNITY_EDITOR
             //测试用
-            plistFilePath = @"C:\Users\Administrator\Desktop\p\s.plist";
-            pngFilePath = @"C:\Users\Administrator\Desktop\p\s.png";
+            plistFilePath = @"C:\Users\Administrator\Desktop\999.plist";
+            pngFilePath = @"C:\Users\Administrator\Desktop\999.png";
             StartCoroutine(LoadFiles());
 #endif
 
@@ -102,8 +110,12 @@ namespace NRatel.TextureUnpacker
 
                 isExecuting = true;
                 imageSpliter = new ImageSpliter(this);
-                StartCoroutine(Split(true));
-                //StartCoroutine(Split(false));
+                StartCoroutine(Unpack());
+            });
+
+            appUI.m_Dropdown_SelectMode.onValueChanged.AddListener((value) =>
+            {
+                currentUnpackMode = (UnpackMode)value;
             });
         }
         
@@ -124,19 +136,19 @@ namespace NRatel.TextureUnpacker
             yield return null;
         }
 
-        private IEnumerator Split(bool isUseOffset)
+        private IEnumerator Unpack()
         {
             int total = plist.frames.Count;
             int count = 0;
             foreach (var frame in plist.frames)
             {
-                if (isUseOffset)
-                {
-                    imageSpliter.Restore(bigTexture, frame);
-                }
-                else
+                if (currentUnpackMode == UnpackMode.JustSplit)
                 {
                     imageSpliter.JustSplit(bigTexture, frame);
+                }
+                else if (currentUnpackMode == UnpackMode.Restore)
+                {
+                    imageSpliter.Restore(bigTexture, frame);
                 }
                 count += 1;
                 appUI.SetTip("进度：" + count + "/" + total, false);

@@ -12,6 +12,7 @@ namespace NRatel.TextureUnpacker
         public Image m_Image_BigImage;
         public Text m_Text_Tip;
         public Button m_Btn_Excute;
+        public Dropdown m_Dropdown_SelectMode;
 
         public void SetTip(string str, bool isError = true)
         {
