@@ -132,11 +132,11 @@ namespace NRatel.TextureUnpacker
             {
                 if (isUseOffset)
                 {
-                    imageSpliter.SplitWithOffset(bigTexture, frame);
+                    imageSpliter.Restore(bigTexture, frame);
                 }
                 else
                 {
-                    imageSpliter.SplitWithoutOffset(bigTexture, frame);
+                    imageSpliter.JustSplit(bigTexture, frame);
                 }
                 count += 1;
                 appUI.SetTip("进度：" + count + "/" + total, false);
