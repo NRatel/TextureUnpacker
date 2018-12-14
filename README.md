@@ -1,10 +1,10 @@
-# TextureUnpacker
+**TextureUnpacker(界面版plist+png拆图工具)**  
 
-###基于Unity的界面版plist+png拆图工具
-未完成
+基于 Unity 2018.2.11f1  
 
-todolist:
-.offset的处理。
-.界面制作。
-.各种版本plist的支持。
-.mac平台的支持。
+**TODO List:**  
+--图片还原功能（offset+rotate的正确处理）。  
+--更多版本plist的支持。  
+--mac平台的支持。  
+--界面美化。  
+
