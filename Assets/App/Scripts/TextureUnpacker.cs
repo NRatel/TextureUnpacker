@@ -8,24 +8,20 @@ namespace NRatel.TextureUnpacker
 {
     public class TextureUnpacker
     {
-        Main main;
-        public TextureUnpacker(Main main)
+        private App app;
+        public TextureUnpacker(App app)
         {
-            this.main = main;
+            this.app = app;
         }
 
         //仅从大图中裁剪出小图
         public void JustSplit(Texture2D bigTexture, Frame frame)
         {
-            //小图采样宽高 (在大图中展示的宽高)
             int sampleWidth = frame.size.width;
             int sampleHeight = frame.size.height;
-
-            //要裁剪出来的目标宽高。
             int destWidth = sampleWidth;
             int destHeight = sampleHeight;
-
-            //按目标宽高创建一张目标底图
+            
             Texture2D destTexture = new Texture2D(destWidth, destHeight);
 
             //旋转时, 采样宽高调换
@@ -38,8 +34,7 @@ namespace NRatel.TextureUnpacker
             //起始位置（Y轴需变换，且受旋转影响）。
             int startPosX = frame.startPos.x;
             int startPosY = bigTexture.height - (frame.startPos.y + sampleHeight);
-
-            //采集像素
+            
             Color[] colors = bigTexture.GetPixels(startPosX, startPosY, sampleWidth, sampleHeight);
 
             //设置像素（将采样像素放到目标图中去）
@@ -62,10 +57,8 @@ namespace NRatel.TextureUnpacker
                 }
             }
             destTexture.Apply();
-
-            //保存打扫
             byte[] bytes = destTexture.EncodeToPNG();
-            Save("SplitedResult", frame.textureName, bytes);
+            Save("SplitedPngs", frame.textureName, bytes);
             Texture2D.Destroy(destTexture);
             destTexture = null;
         }
@@ -73,22 +66,17 @@ namespace NRatel.TextureUnpacker
         //从大图中裁剪出小图，并还原到原始大小（恢复其四周被裁剪的透明像素）
         public void Restore(Texture2D bigTexture, Frame frame)
         {
-            //小图采样宽高 (在大图中展示的宽高)
             int sampleWidth = frame.size.width;
             int sampleHeight = frame.size.height;
-
-            //小图原始的宽高，也是要还原出来的目标宽高。
             int destWidth = frame.sourceSize.width;
             int destHeight = frame.sourceSize.height;
 
             //换算偏移值（不受旋转影响）
             int offsetLX = frame.offset.x + frame.sourceSize.width / 2 - frame.size.width / 2;
             int offsetBY = -(-frame.offset.y + frame.size.height / 2 - frame.sourceSize.height / 2);
-
-            //按目标宽高创建一张目标底图
+            
             Texture2D destTexture = new Texture2D(destWidth, destHeight);
-
-            //旋转时，调换采样宽高
+            
             if (frame.isRotated)
             {
                 sampleWidth = frame.size.height;
@@ -98,8 +86,7 @@ namespace NRatel.TextureUnpacker
             //起始位置（Y轴需变换，且受旋转影响）。
             int startPosX = frame.startPos.x;
             int startPosY = bigTexture.height - (frame.startPos.y + sampleHeight);
-
-            //采集像素（受旋转影响）
+            
             Color[] colors = bigTexture.GetPixels(startPosX, startPosY, sampleWidth, sampleHeight);
 
             //设置像素（将采样像素放到目标图中去）
@@ -109,7 +96,6 @@ namespace NRatel.TextureUnpacker
                 {
                     if (w >= offsetLX && w < frame.size.width + offsetLX && h >= offsetBY && h < frame.size.height + offsetBY)
                     {
-                        //找到目标区域坐标( w，h)对应的采样区域坐标
                         if (frame.isRotated)
                         {
                             //旋转时，目标图中的坐标(w, h),对应的采样区坐标为(h-offsetTY, sampleHeight-(w-offsetLX)-1)
@@ -125,27 +111,30 @@ namespace NRatel.TextureUnpacker
                     }
                     else
                     {
-                        //四周颜色
+                        //四周颜色（透明）
                         destTexture.SetPixel(w, h, new Color(0, 0, 0, 0));
                     }
                 }
             }
 
             destTexture.Apply();
-
-            //保存打扫
             byte[] bytes = destTexture.EncodeToPNG();
-            Save("Restore", frame.textureName, bytes);
+            Save("RestoredPngs", frame.textureName, bytes);
             Texture2D.Destroy(destTexture);
             destTexture = null;
         }
 
         private void Save(string subDir, string textureName, byte[] bytes)
         {
-            string dir = this.main.GetSaveDir() + @"\" + subDir;
+            string dir = this.app.GetSaveDir() + @"\" + subDir;
             if (!Directory.Exists(dir))
             {
                 Directory.CreateDirectory(dir);
+            }
+
+            if (!textureName.EndsWith(".png"))
+            {
+                textureName = textureName + ".png";
             }
 
             FileStream file = File.Open(dir + @"\" + textureName, FileMode.Create);

@@ -330,8 +330,7 @@ namespace NRatel.Win32
 
         public delegate IntPtr HookProc(int code, IntPtr wParam, ref MSG lParam);
         public delegate bool EnumThreadDelegate(IntPtr Hwnd, IntPtr lParam);
-
-        //未用到的API
+        
         public static class Window
         {
             [DllImport("user32.dll")]
