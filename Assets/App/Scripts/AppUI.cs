@@ -1,8 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using NRatel.Win32;
-using System.IO;
 using UnityEngine.UI;
 
 namespace NRatel.TextureUnpacker

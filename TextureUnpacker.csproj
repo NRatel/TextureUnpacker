@@ -305,6 +305,7 @@
   <ItemGroup>
     <Compile Include="Assets\App\Scripts\App.cs" />
     <Compile Include="Assets\App\Scripts\AppUI.cs" />
+    <Compile Include="Assets\App\Scripts\Core.cs" />
     <Compile Include="Assets\App\Scripts\FilesOrFolderDragInto.cs" />
     <Compile Include="Assets\App\Scripts\Loaders\Loader.cs" />
     <Compile Include="Assets\App\Scripts\Loaders\Loader_Format2.cs" />
@@ -312,7 +313,6 @@
     <Compile Include="Assets\App\Scripts\Main.cs" />
     <Compile Include="Assets\App\Scripts\Models.cs" />
     <Compile Include="Assets\App\Scripts\PlistParser.cs" />
-    <Compile Include="Assets\App\Scripts\TextureUnpacker.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Packages\com.unity.package-manager-ui\Editor\Resources\Styles\Main_Dark.uss" />

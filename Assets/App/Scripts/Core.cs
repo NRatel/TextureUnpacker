@@ -1,15 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System;
-using UnityEngine;
+﻿using UnityEngine;
 using System.IO;
 
 namespace NRatel.TextureUnpacker
 {
-    public class TextureUnpacker
+    //核心处理文件
+    //主要算法将在这里讲解
+    public class Core
     {
         private App app;
-        public TextureUnpacker(App app)
+        public Core(App app)
         {
             this.app = app;
         }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using NRatel.Win32;
 using System.IO;
-using UnityEngine.UI;
 
 namespace NRatel.TextureUnpacker
 {
@@ -25,7 +24,7 @@ namespace NRatel.TextureUnpacker
         private Loader loader;
         private Plist plist;
         private Texture2D bigTexture;
-        private TextureUnpacker textureUnpacker;
+        private Core core;
 
         public App(Main main)
         {
@@ -105,7 +104,7 @@ namespace NRatel.TextureUnpacker
                 }
 
                 isExecuting = true;
-                textureUnpacker = new TextureUnpacker(this);
+                core = new Core(this);
 
                 try
                 {
@@ -148,16 +147,16 @@ namespace NRatel.TextureUnpacker
             {
                 if (currentUnpackMode == UnpackMode.JustSplit)
                 {
-                    textureUnpacker.JustSplit(bigTexture, frame);
+                    core.JustSplit(bigTexture, frame);
                 }
                 else if (currentUnpackMode == UnpackMode.Restore)
                 {
-                    textureUnpacker.Restore(bigTexture, frame);
+                    core.Restore(bigTexture, frame);
                 }
                 else if(currentUnpackMode == UnpackMode.All)
                 {
-                    textureUnpacker.JustSplit(bigTexture, frame);
-                    textureUnpacker.Restore(bigTexture, frame);
+                    core.JustSplit(bigTexture, frame);
+                    core.Restore(bigTexture, frame);
                 }
                 count += 1;
                 appUI.SetTip("进度：" + count + "/" + total + (count >= total ? "\n已完成！" : ""), false);
