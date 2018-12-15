@@ -126,11 +126,17 @@ namespace NRatel.TextureUnpacker
         private void Save(string subDir, string textureName, byte[] bytes)
         {
             string dir = this.app.GetSaveDir() + @"\" + subDir;
+
             if (!Directory.Exists(dir))
             {
                 Directory.CreateDirectory(dir);
             }
 
+            foreach (char invalidChar in Path.GetInvalidFileNameChars())
+            {
+                textureName = textureName.Replace(invalidChar, '_');
+            }
+                
             if (!textureName.EndsWith(".png"))
             {
                 textureName = textureName + ".png";

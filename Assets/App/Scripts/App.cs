@@ -32,10 +32,10 @@ namespace NRatel.TextureUnpacker
             appUI = main.GetComponent<AppUI>().Init();
             currentUnpackMode = (UnpackMode)appUI.m_Dropdown_SelectMode.value;
 
+            //编辑器下测试用
 #if UNITY_EDITOR
-            //测试用
-            plistFilePath = @"C:\Users\Administrator\Desktop\999.plist";
-            pngFilePath = @"C:\Users\Administrator\Desktop\999.png";
+            plistFilePath = @"C:\Users\Administrator\Desktop\image\res_bundle.plist";
+            pngFilePath = @"C:\Users\Administrator\Desktop\image\res_bundle.png";
             main.StartCoroutine(LoadFiles());
 #endif
 
@@ -48,7 +48,7 @@ namespace NRatel.TextureUnpacker
             {
                 if (isExecuting)
                 {
-                    appUI.SetTip("正在执行，请等待结束");
+                    appUI.SetTip("正在执行\n请等待结束");
                     return;
                 }
 
@@ -82,9 +82,10 @@ namespace NRatel.TextureUnpacker
                     }
                     else
                     {
-                        appUI.SetTip("请放入plist 或 png 文件");
+                        appUI.SetTip("请放入 plist或png 文件");
                         return;
                     }
+
                     main.StartCoroutine(LoadFiles());
                 }
             });
@@ -93,7 +94,7 @@ namespace NRatel.TextureUnpacker
             {
                 if (isExecuting)
                 {
-                    appUI.SetTip("正在执行，请等待结束");
+                    appUI.SetTip("正在执行\n请等待结束");
                     return;
                 }
 
@@ -106,14 +107,7 @@ namespace NRatel.TextureUnpacker
                 isExecuting = true;
                 core = new Core(this);
 
-                try
-                {
-                    main.StartCoroutine(Unpack());
-                }
-                catch
-                {
-                    appUI.SetTip("出错了！请联系作者");
-                }
+                main.StartCoroutine(Unpack());
             });
 
             appUI.m_Dropdown_SelectMode.onValueChanged.AddListener((value) =>
@@ -121,53 +115,72 @@ namespace NRatel.TextureUnpacker
                 currentUnpackMode = (UnpackMode)value;
             });
         }
-        
+
         private IEnumerator LoadFiles()
         {
-            loader = Loader.LookingForLoader(plistFilePath);
-            if (loader != null)
+            try
             {
-                plist = loader.LoadPlist(plistFilePath);
-                bigTexture = loader.LoadTexture(pngFilePath, plist.metadata);
-                appUI.SetImage(bigTexture);
-                appUI.SetTip("名称: " + plist.metadata.textureFileName + "\n类型: format_" + plist.metadata.format + "\n大小: " + plist.metadata.size.width + "*" + plist.metadata.size.height, false);
+                loader = Loader.LookingForLoader(plistFilePath);
+                if (loader != null)
+                {
+                    plist = loader.LoadPlist(plistFilePath);
+                    bigTexture = loader.LoadTexture(pngFilePath, plist.metadata);
+                    appUI.SetImage(bigTexture);
+                    appUI.SetTip("名称: " + plist.metadata.textureFileName + "\n类型: format_" + plist.metadata.format + "\n大小: " + plist.metadata.size.width + "*" + plist.metadata.size.height, false);
+                }
+                else
+                {
+                    appUI.SetTip("无法识别的plist类型!!!\n请联系作者");
+                }
             }
-            else
+            catch
             {
-                appUI.SetTip("无法识别的plist类型，请联系作者");
+                appUI.SetTip("出错了!!!\n请联系作者\n↓");
             }
             yield return null;
         }
 
         private IEnumerator Unpack()
         {
-            int total = plist.frames.Count;
-            int count = 0;
-            foreach (var frame in plist.frames)
+            try
             {
-                if (currentUnpackMode == UnpackMode.JustSplit)
+                int total = plist.frames.Count;
+                int count = 0;
+                foreach (var frame in plist.frames)
                 {
-                    core.JustSplit(bigTexture, frame);
+                    if (currentUnpackMode == UnpackMode.JustSplit)
+                    {
+                        core.JustSplit(bigTexture, frame);
+                    }
+                    else if (currentUnpackMode == UnpackMode.Restore)
+                    {
+                        core.Restore(bigTexture, frame);
+                    }
+                    else if (currentUnpackMode == UnpackMode.All)
+                    {
+                        core.JustSplit(bigTexture, frame);
+                        core.Restore(bigTexture, frame);
+                    }
+                    count += 1;
+                    appUI.SetTip("进度：" + count + "/" + total + (count >= total ? "\n已完成！" : ""), false);
                 }
-                else if (currentUnpackMode == UnpackMode.Restore)
-                {
-                    core.Restore(bigTexture, frame);
-                }
-                else if(currentUnpackMode == UnpackMode.All)
-                {
-                    core.JustSplit(bigTexture, frame);
-                    core.Restore(bigTexture, frame);
-                }
-                count += 1;
-                appUI.SetTip("进度：" + count + "/" + total + (count >= total ? "\n已完成！" : ""), false);
-                yield return null;
+                isExecuting = false;
             }
-            isExecuting = false;
+            catch
+            {
+                appUI.SetTip("出错了!!!\n请联系作者\n↓");
+            }
+            yield return null;
         }
 
         public string GetSaveDir()
         {
-            return Path.GetDirectoryName(plistFilePath) + @"\NRatel_" + Path.GetFileNameWithoutExtension(plistFilePath);
+            string s = Path.GetFileNameWithoutExtension(plistFilePath);
+            foreach (char invalidChar in Path.GetInvalidPathChars())
+            {
+                s = s.Replace(invalidChar, '_');
+            }
+            return Path.GetDirectoryName(plistFilePath) + @"\NRatel_" + s;
         }
     }
 }
