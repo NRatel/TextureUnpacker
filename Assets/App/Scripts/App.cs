@@ -34,8 +34,8 @@ namespace NRatel.TextureUnpacker
 
             //编辑器下测试用
 #if UNITY_EDITOR
-            plistFilePath = @"C:\Users\Administrator\Desktop\image\res_bundle.plist";
-            pngFilePath = @"C:\Users\Administrator\Desktop\image\res_bundle.png";
+            plistFilePath = @"C:\Users\Administrator\Desktop\plist&png\test.plist";
+            pngFilePath = @"C:\Users\Administrator\Desktop\plist&png\test.png";
             main.StartCoroutine(LoadFiles());
 #endif
 
@@ -142,11 +142,12 @@ namespace NRatel.TextureUnpacker
 
         private IEnumerator Unpack()
         {
-            try
+
+            int total = plist.frames.Count;
+            int count = 0;
+            foreach (var frame in plist.frames)
             {
-                int total = plist.frames.Count;
-                int count = 0;
-                foreach (var frame in plist.frames)
+                try
                 {
                     if (currentUnpackMode == UnpackMode.JustSplit)
                     {
@@ -164,13 +165,13 @@ namespace NRatel.TextureUnpacker
                     count += 1;
                     appUI.SetTip("进度：" + count + "/" + total + (count >= total ? "\n已完成！" : ""), false);
                 }
-                isExecuting = false;
+                catch
+                {
+                    appUI.SetTip("出错了!!!\n请联系作者\n↓");
+                }
+                yield return null;
             }
-            catch
-            {
-                appUI.SetTip("出错了!!!\n请联系作者\n↓");
-            }
-            yield return null;
+            isExecuting = false;
         }
 
         public string GetSaveDir()
