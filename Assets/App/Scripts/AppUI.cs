@@ -50,30 +50,18 @@ namespace NRatel.TextureUnpacker
 
             Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
             this.m_Image_BigImage.sprite = sprite;
+            RectTransform rt = this.m_Image_BigImage.GetComponent<RectTransform>();
+            rt.sizeDelta = new Vector2(texture.width, texture.height);
 
-            float width, height;
-            float aspectRatio = 1.0f * texture.width / texture.height;
-
-            int max = Mathf.Max(texture.width, texture.height);
-            max = max < 600 ? max : 600;
-
-            if (aspectRatio == 1)
+            //缩放至屏幕可直接显示的大小
+            float minRate = Mathf.Min(600.0f / texture.width, 600.0f/ texture.height);
+            if (minRate < 1)
             {
-                width = max;
-                height = max;
+                rt.localScale = new Vector2(minRate, minRate);
             }
-            else if (aspectRatio > 1)
-            {
-                width = max;
-                height = width / aspectRatio;
+            else {
+                rt.localScale = Vector2.one;
             }
-            else
-            {
-                height = max;
-                width = height * aspectRatio;
-            }
-
-            this.m_Image_BigImage.GetComponent<RectTransform>().sizeDelta = new Vector2(width, height);
         }
     }
 }

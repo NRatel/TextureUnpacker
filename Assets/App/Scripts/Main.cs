@@ -2,7 +2,7 @@
 
 namespace NRatel.TextureUnpacker
 {
-    //入口文件，兼职处理App的协程
+    //入口类，兼职处理App的协程
     public class Main : MonoBehaviour
     {
         void Start()

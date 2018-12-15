@@ -106,7 +106,15 @@ namespace NRatel.TextureUnpacker
 
                 isExecuting = true;
                 textureUnpacker = new TextureUnpacker(this);
-                main.StartCoroutine(Unpack());
+
+                try
+                {
+                    main.StartCoroutine(Unpack());
+                }
+                catch
+                {
+                    appUI.SetTip("出错了！请联系作者");
+                }
             });
 
             appUI.m_Dropdown_SelectMode.onValueChanged.AddListener((value) =>
@@ -120,10 +128,10 @@ namespace NRatel.TextureUnpacker
             loader = Loader.LookingForLoader(plistFilePath);
             if (loader != null)
             {
-                appUI.SetTip("可处理! \n【" + loader.GetType().Name.ToString().Replace("Loader_", "") + "】", false);
                 plist = loader.LoadPlist(plistFilePath);
                 bigTexture = loader.LoadTexture(pngFilePath, plist.metadata);
                 appUI.SetImage(bigTexture);
+                appUI.SetTip("名称: " + plist.metadata.textureFileName + "\n类型: format_" + plist.metadata.format + "\n大小: " + plist.metadata.size.width + "*" + plist.metadata.size.height, false);
             }
             else
             {
@@ -152,7 +160,7 @@ namespace NRatel.TextureUnpacker
                     textureUnpacker.Restore(bigTexture, frame);
                 }
                 count += 1;
-                appUI.SetTip("进度：" + count + "/" + total, false);
+                appUI.SetTip("进度：" + count + "/" + total + (count >= total ? "\n已完成！" : ""), false);
                 yield return null;
             }
             isExecuting = false;
