@@ -3,8 +3,8 @@ using System.IO;
 
 namespace NRatel.TextureUnpacker
 {
-    //核心处理文件
-    //主要算法将在这里讲解
+    //核心处理类
+    //主要算法在这里有讲解 https://blog.csdn.net/NRatel/article/details/85017491
     public class Core
     {
         private App app;
@@ -43,8 +43,8 @@ namespace NRatel.TextureUnpacker
                 {
                     if (frame.isRotated)
                     {
-                        //旋转时，目标图中的坐标(w, h),对应的采样区坐标为(h, sampleHeight - w - 1)
-                        int index = (sampleHeight - w - 1) * sampleWidth + h;
+                        //旋转时，目标图中的坐标(w, h),对应的采样区坐标为(h, sampleHeight-1-w)
+                        int index = (sampleHeight - 1 - w) * sampleWidth + h;
                         destTexture.SetPixel(w, h, colors[index]);
                     }
                     else
@@ -97,8 +97,8 @@ namespace NRatel.TextureUnpacker
                     {
                         if (frame.isRotated)
                         {
-                            //旋转时，目标图中的坐标(w, h),对应的采样区坐标为(h-offsetTY, sampleHeight-(w-offsetLX)-1)
-                            int index = (sampleHeight - (w - offsetLX) - 1) * sampleWidth + (h - offsetBY);
+                            //旋转时，目标图中的坐标(w, h),对应的采样区坐标为(h-offsetTY, sampleHeight-1-(w-offsetLX))
+                            int index = (sampleHeight - 1 - (w - offsetLX)) * sampleWidth + (h - offsetBY);
                             destTexture.SetPixel(w, h, colors[index]);
                         }
                         else
