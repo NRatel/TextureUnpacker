@@ -82,8 +82,8 @@ namespace NRatel.TextureUnpacker
             s = s.Substring(1, s.Length - 2);
             string[] v2is = s.Split(',');
 
-            int x = (int)float.Parse(v2is[0]);
-            int y = (int)float.Parse(v2is[1]);
+            int x = Mathf.RoundToInt(float.Parse(v2is[0]));
+            int y = Mathf.RoundToInt(float.Parse(v2is[1]));
             return new Vector2Int(x, y);
         }
 
