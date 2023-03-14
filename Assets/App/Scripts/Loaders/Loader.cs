@@ -48,7 +48,8 @@ namespace NRatel.TextureUnpacker
             List<Frame> frames = new List<Frame>();
             foreach (var kvPair in pd.root["frames"].AsDict().values)
             {
-                frames.Add(CreateFrame(kvPair.Key, kvPair.Value.AsDict()));
+                Frame frame = CreateFrame(kvPair.Key, kvPair.Value.AsDict());
+                frames.Add(frame);
             }
             return new Plist(pd.version, metadata, frames);
         }
@@ -80,7 +81,10 @@ namespace NRatel.TextureUnpacker
             s = s.Replace(" ", "");
             s = s.Substring(1, s.Length - 2);
             string[] v2is = s.Split(',');
-            return new Vector2Int(int.Parse(v2is[0]), int.Parse(v2is[1]));
+
+            int x = (int)float.Parse(v2is[0]);
+            int y = (int)float.Parse(v2is[1]);
+            return new Vector2Int(x, y);
         }
 
         static public SizeInt StringToSizeInt(string s)
